@@ -18,11 +18,11 @@
         .logo-text { font-weight: 700; font-size: 16px; color: #1a1d23; }
         .nav-links { display: flex; align-items: center; gap: 24px; }
         .nav-link { text-decoration: none; color: #6b7280; font-weight: 500; font-size: 14px; transition: color 0.15s; }
-        .nav-link:hover, .nav-link.active { color: #4f46e5; }
+        .nav-link:hover, .nav-link.active { color: #b91c1c; }
         
         /* User Info */
         .user-menu { display: flex; align-items: center; gap: 12px; padding-left: 20px; border-left: 1px solid #f0f1f5; }
-        .avatar { width: 32px; height: 32px; border-radius: 50%; background: #eff0ff; color: #4f46e5; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; }
+        .avatar { width: 32px; height: 32px; border-radius: 50%; background: #fef2f2; color: #b91c1c; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; }
 
         /* Main Content */
         main { flex: 1; max-width: 1100px; margin: 0 auto; width: 100%; padding: 32px 24px; }
@@ -33,8 +33,8 @@
 
         /* Buttons */
         .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; text-decoration: none; }
-        .btn-primary { background: #4f46e5; color: #fff; }
-        .btn-primary:hover { background: #4338ca; transform: translateY(-1px); }
+        .btn-primary { background: #b91c1c; color: #fff; }
+        .btn-primary:hover { background: #991b1b; transform: translateY(-1px); }
         .btn-outline { background: transparent; color: #6b7280; border: 1px solid #e2e4ea; }
         .btn-outline:hover { background: #f9fafb; color: #1a1d23; }
 
@@ -57,12 +57,12 @@
     <nav>
         <div class="nav-inner">
             <a href="{{ route('dashboard') }}" class="logo">
-                <div class="logo-icon">
+                <div class="logo-icon" style="background: var(--primary);">
                     <svg width="18" height="18" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                     </svg>
                 </div>
-                <span class="logo-text">Smart Kantin</span>
+                <span class="logo-text">Kantin PGRI 11</span>
             </a>
             
             <div class="flex items-center gap-6">

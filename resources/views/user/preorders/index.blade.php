@@ -1,90 +1,76 @@
 @extends('user.layout')
-@section('title', 'Preorder')
+@section('title', 'Pesanan Saya')
 
 @section('content')
-<div style="margin-bottom: 32px;">
-    <h1 style="font-size: 24px; font-weight: 800; color: #1a1d23; margin-bottom: 8px;">Daftar Menu</h1>
-    <p style="color: #6b7280; font-size: 15px;">Pilih menu favoritmu untuk dinikmati hari esok.</p>
-</div>
-
-<!-- Menu Grid -->
-<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; margin-bottom: 48px;">
-    @foreach($menus as $menu)
-    <div class="card" style="padding: 0; overflow: hidden; display: flex; flex-direction: column;">
-        <div style="height: 180px; background: #eff0ff; overflow: hidden;">
-            @if($menu->image)
-                <img src="{{ asset('storage/'.$menu->image) }}" alt="{{ $menu->name }}" style="width: 100%; h-full; object-fit: cover;">
-            @else
-                <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #4f46e5;">
-                    <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z"/><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z"/></svg>
-                </div>
-            @endif
-        </div>
-        <div style="padding: 20px; flex: 1; display: flex; flex-direction: column;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-                <h3 style="font-size: 16px; font-weight: 700; color: #1a1d23;">{{ $menu->name }}</h3>
-                <span style="font-size: 14px; font-weight: 700; color: #4f46e5;">Rp{{ number_format($menu->price, 0, ',', '.') }}</span>
-            </div>
-            <p style="font-size: 13px; color: #6b7280; margin-bottom: 20px; line-height: 1.5; flex: 1;">{{ $menu->description ?? 'Menu spesial pilihan koki kami untuk menemani harimu.' }}</p>
-            
-            <form action="{{ route('preorders.store') }}" method="POST">
-                @csrf
-                <input type="hidden" name="menu_id" value="{{ $menu->id }}">
-                <input type="hidden" name="preorder_date" value="{{ \Carbon\Carbon::tomorrow()->format('Y-m-d') }}">
-                
-                <div style="display: flex; flex-direction: column; gap: 8px;">
-                    <div style="display: flex; gap: 8px;">
-                        <select name="quantity" style="flex: 1; padding: 8px; border: 1px solid #e2e4ea; border-radius: 8px; font-size: 13px; background: #f9fafb;">
-                            @for($i=1; $i<=5; $i++) <option value="{{ $i }}">{{ $i }} Porsi</option> @endfor
-                        </select>
-                        <select name="payment_method" style="flex: 1.5; padding: 8px; border: 1px solid #e2e4ea; border-radius: 8px; font-size: 13px; background: #f9fafb;">
-                            <option value="cash">Tunai (Bayar Ditempat)</option>
-                            <option value="transfer">Transfer Bank</option>
-                            <option value="ewallet">E-Wallet (OVO/Gopay)</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 10px; font-size: 13px;">Konfirmasi & Preorder</button>
-                </div>
-            </form>
-        </div>
+<div style="margin-bottom: 40px; display: flex; justify-content: space-between; align-items: flex-end;">
+    <div>
+        <h1 style="font-size: 28px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Riwayat Pesanan</h1>
+        <p style="color: #64748b; font-size: 15px;">Pantau semua pesanan makananmu di sini.</p>
     </div>
-    @endforeach
+    <a href="{{ route('welcome') }}" class="btn btn-primary" style="background: #b91c1c; border-radius: 12px; font-weight: 700;">
+        + Buat Pesanan Baru
+    </a>
 </div>
 
-<!-- History -->
-<div class="card">
-    <div class="card-title">Riwayat Preorder Saya</div>
+@if(session('success'))
+    <div style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; padding: 16px 20px; border-radius: 12px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px;">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+        <span style="font-weight: 600;">{{ session('success') }}</span>
+    </div>
+@endif
+
+<div class="card" style="padding: 0; overflow: hidden;">
     <div style="overflow-x: auto;">
         <table style="width: 100%; border-collapse: collapse;">
             <thead>
-                <tr>
-                    <th style="text-align: left; padding: 12px; font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; border-bottom: 1px solid #e8eaf0;">Menu</th>
-                    <th style="text-align: left; padding: 12px; font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; border-bottom: 1px solid #e8eaf0;">Tanggal</th>
-                    <th style="text-align: left; padding: 12px; font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; border-bottom: 1px solid #e8eaf0;">Jumlah</th>
-                    <th style="text-align: left; padding: 12px; font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; border-bottom: 1px solid #e8eaf0;">Pembayaran</th>
-                    <th style="text-align: left; padding: 12px; font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; border-bottom: 1px solid #e8eaf0;">Status</th>
+                <tr style="background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+                    <th style="padding: 16px 24px; text-align: left; font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.1em;">No. Pesanan</th>
+                    <th style="padding: 16px 24px; text-align: left; font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.1em;">Item</th>
+                    <th style="padding: 16px 24px; text-align: left; font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.1em;">Kantin</th>
+                    <th style="padding: 16px 24px; text-align: left; font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.1em;">Status</th>
+                    <th style="padding: 16px 24px; text-align: right; font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.1em;">Aksi</th>
                 </tr>
             </thead>
             <tbody>
-                @forelse($myPreorders as $preorder)
-                <tr>
-                    <td style="padding: 12px; border-bottom: 1px solid #f8fafc; font-weight: 600;">{{ $preorder->menu->name }}</td>
-                    <td style="padding: 12px; border-bottom: 1px solid #f8fafc; color: #6b7280;">{{ \Carbon\Carbon::parse($preorder->preorder_date)->format('d/m/Y') }}</td>
-                    <td style="padding: 12px; border-bottom: 1px solid #f8fafc; color: #6b7280;">{{ $preorder->quantity }} Porsi</td>
-                    <td style="padding: 12px; border-bottom: 1px solid #f8fafc;">
-                        <span style="font-size:11px; color:#6b7280;">{{ strtoupper($preorder->payment_method) }}</span><br>
-                        <span class="badge {{ $preorder->payment_status == 'paid' ? 'badge-green' : 'badge-yellow' }}" style="font-size:9px;">
-                            {{ strtoupper($preorder->payment_status) }}
-                        </span>
-                    </td>
-                    <td style="padding: 12px; border-bottom: 1px solid #f8fafc;">
-                        <span class="badge {{ $preorder->status == 'pending' ? 'badge-yellow' : ($preorder->status == 'completed' ? 'badge-green' : 'badge-blue') }}">
-                            {{ $preorder->status }}
-                        </span>
-                    </td>
-                </tr>
+                @forelse($myPreorders as $po)
+                    <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.2s;">
+                        <td style="padding: 20px 24px;">
+                            <span style="font-family: monospace; font-weight: 800; color: #b91c1c; background: #fee2e2; padding: 4px 10px; border-radius: 6px; font-size: 13px;">
+                                {{ $po->order_number ?? 'LEGACY' }}
+                            </span>
+                        </td>
+                        <td style="padding: 20px 24px;">
+                            <div style="font-weight: 700; color: #1e293b; margin-bottom: 2px;">{{ $po->menu->name }}</div>
+                            <div style="font-size: 12px; color: #94a3b8;">{{ $po->quantity }} Porsi • Rp {{ number_format($po->menu->price * $po->quantity, 0, ',', '.') }}</div>
+                        </td>
+                        <td style="padding: 20px 24px;">
+                            <div style="font-size: 14px; font-weight: 600; color: #475569;">{{ $po->canteen->name }}</div>
+                        </td>
+                        <td style="padding: 20px 24px;">
+                            @php
+                                $statusColor = $po->status == 'pending' ? '#d97706' : ($po->status == 'completed' ? '#059669' : '#dc2626');
+                                $statusBg = $po->status == 'pending' ? '#fffbeb' : ($po->status == 'completed' ? '#f0fdf4' : '#fef2f2');
+                            @endphp
+                            <span style="background: {{ $statusBg }}; color: {{ $statusColor }}; padding: 4px 12px; border-radius: 99px; font-size: 11px; font-weight: 800; text-transform: uppercase;">
+                                {{ $po->status }}
+                            </span>
+                        </td>
+                        <td style="padding: 20px 24px; text-align: right;">
+                            <a href="{{ route('preorders.receipt', $po->order_number) }}" style="display: inline-flex; align-items: center; gap: 6px; text-decoration: none; font-size: 13px; font-weight: 700; color: #6366f1; border: 1px solid #e0e7ff; padding: 8px 16px; border-radius: 10px; transition: all 0.2s;">
+                                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                Lihat Struk
+                            </a>
+                        </td>
+                    </tr>
                 @empty
-                <tr><td colspan="4" style="text-align: center; padding: 32px; color: #94a3b8;">Belum ada riwayat pesanan.</td></tr>
+                    <tr>
+                        <td colspan="5" style="padding: 80px 24px; text-align: center;">
+                            <div style="font-size: 40px; margin-bottom: 16px;">🥡</div>
+                            <div style="font-size: 16px; font-weight: 700; color: #1e293b; margin-bottom: 4px;">Belum ada pesanan</div>
+                            <p style="color: #64748b; font-size: 14px;">Ayo mulai pesan makanan dari kantin favoritmu!</p>
+                            <a href="{{ route('welcome') }}" class="btn btn-primary" style="margin-top: 24px; display: inline-block;">Pilih Kantin</a>
+                        </td>
+                    </tr>
                 @endforelse
             </tbody>
         </table>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>ERD Gabungan - Sistem Kantin Cerdas</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#f4f7f6; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display:flex; flex-direction:column; align-items:center; padding:20px; }
+.container { background:#fff; padding:20px; border-radius:8px; box-shadow:0 4px 6px rgba(0,0,0,0.1); }
+svg { border:1px solid #eee; background:#fff; }
+.actor { fill:#FFEDD5; stroke:#FB923C; stroke-width:3; }
+.entity { fill:#FEF3C7; stroke:#F59E0B; stroke-width:2; }
+.rel { fill:#DCFCE7; stroke:#22C55E; stroke-width:2; }
+.attr { fill:#DBEAFE; stroke:#3B82F6; stroke-width:1.5; }
+.label { font-size:12px; font-weight:bold; fill:#1E293B; text-anchor:middle; dominant-baseline:central; }
+.rlabel { font-size:10px; font-weight:bold; fill:#166534; text-anchor:middle; dominant-baseline:central; }
+.line { stroke:#64748B; stroke-width:1.5; fill:none; }
+.card { font-size:11px; fill:#475569; text-anchor:middle; font-weight:bold; }
+.title { font-size:24px; font-weight:bold; fill:#1E293B; margin-bottom:20px; }
+.subtitle { font-size:14px; color:#64748B; margin-bottom:20px; }
+</style>
+</head>
+<body>
+<h1 class="title">ERD Gabungan (Aktor & Entitas)</h1>
+<p class="subtitle">Menampilkan interaksi Admin dan Pelanggan terhadap sistem Kantin Cerdas</p>
+
+<div class="container">
+<svg width="1200" height="900" viewBox="0 0 1200 900">
+    <!-- ===== ACTORS ===== -->
+    <!-- Admin Actor (Top Left) -->
+    <rect x="50" y="100" width="120" height="50" rx="10" class="actor"/>
+    <text x="110" y="125" class="label">AKTOR: ADMIN</text>
+
+    <!-- User Actor (Top Right) -->
+    <rect x="1030" y="100" width="120" height="50" rx="10" class="actor"/>
+    <text x="1090" y="125" class="label">AKTOR: USER</text>
+
+    <!-- ===== CENTRAL ENTITIES ===== -->
+    <!-- Canteen -->
+    <rect x="540" y="100" width="120" height="50" rx="3" class="entity"/>
+    <text x="600" y="125" class="label">Canteen</text>
+
+    <!-- Menu -->
+    <rect x="540" y="300" width="120" height="50" rx="3" class="entity"/>
+    <text x="600" y="325" class="label">Menu</text>
+
+    <!-- Preorder -->
+    <rect x="540" y="500" width="120" height="50" rx="3" class="entity"/>
+    <text x="600" y="525" class="label">Preorder</text>
+
+    <!-- ===== ADMIN-ONLY ENTITIES ===== -->
+    <!-- Production -->
+    <rect x="250" y="250" width="110" height="40" rx="3" class="entity"/>
+    <text x="305" y="270" class="label">Production</text>
+
+    <!-- Sale -->
+    <rect x="250" y="350" width="110" height="40" rx="3" class="entity"/>
+    <text x="305" y="370" class="label">Sale</text>
+
+    <!-- Food Waste -->
+    <rect x="250" y="450" width="110" height="40" rx="3" class="entity"/>
+    <text x="305" y="470" class="label">Food Waste</text>
+
+    <!-- Donation -->
+    <rect x="250" y="600" width="110" height="40" rx="3" class="entity"/>
+    <text x="305" y="620" class="label">Donation</text>
+
+    <!-- Recipient -->
+    <rect x="50" y="600" width="110" height="40" rx="3" class="entity"/>
+    <text x="105" y="620" class="label">Recipient</text>
+
+    <!-- DSS Result -->
+    <rect x="850" y="300" width="110" height="40" rx="3" class="entity"/>
+    <text x="905" y="320" class="label">DSS Result</text>
+
+    <!-- ===== RELATIONSHIPS (Diamonds) ===== -->
+    <!-- Admin Manages Canteen -->
+    <polygon points="300,125 350,100 400,125 350,150" class="rel"/>
+    <text x="350" y="125" class="rlabel">Manages</text>
+    <line x1="170" y1="125" x2="300" y2="125" class="line"/>
+    <line x1="400" y1="125" x2="540" y2="125" class="line"/>
+
+    <!-- Canteen Has Menu -->
+    <polygon points="600,200 640,180 680,200 640,220" class="rel"/>
+    <text x="640" y="200" class="rlabel">Has</text>
+    <line x1="600" y1="150" x2="640" y2="180" class="line"/>
+    <line x1="640" y1="220" x2="600" y2="300" class="line"/>
+
+    <!-- Admin Records Production -->
+    <polygon points="200,200 240,180 280,200 240,220" class="rel"/>
+    <text x="240" y="200" class="rlabel">Records</text>
+    <line x1="110" y1="150" x2="240" y2="180" class="line"/>
+    <line x1="240" y1="220" x2="280" y2="250" class="line"/>
+
+    <!-- Menu Produced As Production -->
+    <line x1="540" y1="325" x2="360" y2="270" class="line"/>
+
+    <!-- Menu Sold As Sale -->
+    <line x1="540" y1="325" x2="360" y2="370" class="line"/>
+
+    <!-- Menu Wasted As Food Waste -->
+    <line x1="540" y1="325" x2="360" y2="470" class="line"/>
+
+    <!-- Food Waste Donated To Recipient -->
+    <polygon points="150,530 200,510 250,530 200,550" class="rel"/>
+    <text x="200" y="530" class="rlabel">Donates</text>
+    <line x1="305" y1="490" x2="200" y2="510" class="line"/>
+    <line x1="200" y1="550" x2="305" y2="600" class="line"/>
+    <line x1="305" y1="620" x2="160" y2="620" class="line"/>
+
+    <!-- User Places Preorder -->
+    <polygon points="850,125 900,100 950,125 900,150" class="rel"/>
+    <text x="900" y="125" class="rlabel">Places</text>
+    <line x1="1030" y1="125" x2="950" y2="125" class="line"/>
+    <line x1="850" y1="125" x2="660" y2="125" class="line"/>
+    <line x1="900" y1="150" x2="660" y2="525" class="line"/>
+
+    <!-- Preorder Ordered In Menu -->
+    <polygon points="600,410 640,390 680,410 640,430" class="rel"/>
+    <text x="640" y="410" class="rlabel">Ordered In</text>
+    <line x1="600" y1="350" x2="640" y2="390" class="line"/>
+    <line x1="640" y1="430" x2="600" y2="500" class="line"/>
+
+    <!-- Admin Verifies Preorder -->
+    <polygon points="350,525 400,500 450,525 400,550" class="rel"/>
+    <text x="400" y="525" class="rlabel">Verifies</text>
+    <line x1="110" y1="150" x2="400" y2="500" class="line"/>
+    <line x1="400" y1="550" x2="540" y2="525" class="line"/>
+
+    <!-- System Analyzes DSS -->
+    <polygon points="750,325 800,300 850,325 800,350" class="rel"/>
+    <text x="800" y="325" class="rlabel">Analyzes</text>
+    <line x1="660" y1="325" x2="750" y2="325" class="line"/>
+    <line x1="850" y1="325" x2="850" y2="320" class="line"/>
+
+    <!-- Cardinality Labels -->
+    <text x="190" y="115" class="card">1</text>
+    <text x="510" y="115" class="card">M</text>
+    <text x="1010" y="115" class="card">1</text>
+    <text x="670" y="515" class="card">M</text>
+    <text x="630" y="165" class="card">1</text>
+    <text x="630" y="285" class="card">M</text>
+
+    <!-- Legend -->
+    <rect x="850" y="650" width="300" height="180" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="870" y="680" style="font-size:14px;font-weight:bold;fill:#1e293b">Legenda:</text>
+    
+    <rect x="870" y="700" width="40" height="20" rx="5" class="actor"/>
+    <text x="970" y="712" style="font-size:12px;fill:#475569">= Aktor (Admin/User)</text>
+    
+    <rect x="870" y="730" width="40" height="20" rx="2" class="entity"/>
+    <text x="970" y="742" style="font-size:12px;fill:#475569">= Entitas (Tabel DB)</text>
+    
+    <polygon points="870,775 890,760 910,775 890,790" class="rel"/>
+    <text x="970" y="777" style="font-size:12px;fill:#475569">= Relasi (Aksi)</text>
+    
+    <line x1="870" y1="810" x2="910" y2="810" class="line"/>
+    <text x="970" y="812" style="font-size:12px;fill:#475569">= Alur Hubungan</text>
+</svg>
+</div>
+</body>
+</html>

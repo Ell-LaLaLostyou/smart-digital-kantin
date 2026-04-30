@@ -4,8 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\Traits\BelongsToCanteen;
+
 class Donation extends Model
 {
+    use BelongsToCanteen;
+
     protected $guarded = [];
 
     public function foodWaste()

@@ -24,8 +24,21 @@ class AdminPreorderController extends Controller
             'status' => 'required|in:pending,completed,cancelled',
         ]);
 
-        $preorder->update(['status' => $request->status]);
+        $updateData = ['status' => $request->status];
 
-        return back()->with('success', 'Status pesanan berhasil diperbarui.');
+        // Jika pesanan selesai, otomatis anggap sudah bayar
+        if ($request->status == 'completed') {
+            $updateData['payment_status'] = 'paid';
+        }
+
+        $preorder->update($updateData);
+
+        return back()->with('success', 'Status pesanan dan pembayaran berhasil diperbarui.');
+    }
+
+    public function verifyPayment(Preorder $preorder)
+    {
+        $preorder->update(['payment_status' => 'paid']);
+        return back()->with('success', 'Pembayaran berhasil diverifikasi.');
     }
 }

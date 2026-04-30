@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>ERD User - Sistem Kantin Cerdas</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#fff; font-family:Arial,sans-serif; display:flex; justify-content:center; padding:30px; }
+svg { border:1px solid #ccc; }
+.entity { fill:#F5A623; stroke:#D4880F; stroke-width:2; }
+.attr { fill:#4A90D9; stroke:#2E6BA6; stroke-width:1.5; }
+.pk { fill:#2E6BA6; stroke:#1A4A7A; stroke-width:2; }
+.rel { fill:#7ED321; stroke:#5DA018; stroke-width:2; }
+.label { font-size:11px; fill:#fff; text-anchor:middle; dominant-baseline:central; font-weight:bold; }
+.elabel { font-size:13px; fill:#fff; text-anchor:middle; dominant-baseline:central; font-weight:bold; }
+.rlabel { font-size:10px; fill:#fff; text-anchor:middle; dominant-baseline:central; font-weight:bold; }
+.line { stroke:#333; stroke-width:1.5; fill:none; }
+.card { font-size:10px; fill:#333; text-anchor:middle; font-weight:bold; }
+.title { font-size:18px; fill:#333; text-anchor:middle; font-weight:bold; }
+</style>
+</head>
+<body>
+<svg width="1100" height="750" viewBox="0 0 1100 750">
+<text x="550" y="25" class="title">ERD Perspektif User / Guest — Sistem Kantin Cerdas</text>
+
+<!-- ===== ENTITY: USER (200, 150) ===== -->
+<rect x="155" y="130" width="90" height="40" rx="3" class="entity"/>
+<text x="200" y="150" class="elabel">User</text>
+<!-- User Attributes -->
+<ellipse cx="60" cy="70" rx="35" ry="16" class="pk"/>
+<text x="60" y="70" class="label" text-decoration="underline">UserID</text>
+<line x1="95" y1="70" x2="155" y2="140" class="line"/>
+
+<ellipse cx="170" cy="55" rx="30" ry="16" class="attr"/>
+<text x="170" y="55" class="label">Name</text>
+<line x1="185" y1="70" x2="190" y2="130" class="line"/>
+
+<ellipse cx="260" cy="55" rx="30" ry="16" class="attr"/>
+<text x="260" y="55" class="label">Email</text>
+<line x1="245" y1="70" x2="230" y2="130" class="line"/>
+
+<ellipse cx="340" cy="90" rx="35" ry="16" class="attr"/>
+<text x="340" y="90" class="label">Password</text>
+<line x1="305" y1="95" x2="245" y2="135" class="line"/>
+
+<ellipse cx="60" cy="150" rx="28" ry="16" class="attr"/>
+<text x="60" y="150" class="label">Role</text>
+<line x1="88" y1="150" x2="155" y2="150" class="line"/>
+
+<!-- ===== ENTITY: CANTEEN (800, 150) ===== -->
+<rect x="755" y="130" width="90" height="40" rx="3" class="entity"/>
+<text x="800" y="150" class="elabel">Canteen</text>
+
+<ellipse cx="900" cy="70" rx="40" ry="16" class="pk"/>
+<text x="900" y="70" class="label">CanteenID</text>
+<line x1="870" y1="82" x2="845" y2="130" class="line"/>
+
+<ellipse cx="800" cy="55" rx="30" ry="16" class="attr"/>
+<text x="800" y="55" class="label">Name</text>
+<line x1="800" y1="71" x2="800" y2="130" class="line"/>
+
+<ellipse cx="700" cy="80" rx="28" ry="16" class="attr"/>
+<text x="700" y="80" class="label">Slug</text>
+<line x1="725" y1="88" x2="755" y2="135" class="line"/>
+
+<ellipse cx="990" cy="120" rx="40" ry="16" class="attr"/>
+<text x="990" y="120" class="label">ImageURL</text>
+<line x1="955" y1="128" x2="845" y2="145" class="line"/>
+
+<ellipse cx="990" cy="160" rx="40" ry="16" class="attr"/>
+<text x="990" y="160" class="label">OwnerID</text>
+<line x1="950" y1="160" x2="845" y2="155" class="line"/>
+
+<!-- ===== RELATIONSHIP: Belongs To (User - Canteen) ===== -->
+<polygon points="500,150 545,130 590,150 545,170" class="rel"/>
+<text x="545" y="150" class="rlabel">Belongs To</text>
+<line x1="245" y1="150" x2="500" y2="150" class="line"/>
+<line x1="590" y1="150" x2="755" y2="150" class="line"/>
+<text x="280" y="142" class="card">M</text>
+<text x="720" y="142" class="card">1</text>
+
+<!-- ===== ENTITY: MENU (800, 400) ===== -->
+<rect x="755" y="380" width="90" height="40" rx="3" class="entity"/>
+<text x="800" y="400" class="elabel">Menu</text>
+
+<ellipse cx="940" cy="340" rx="35" ry="16" class="pk"/>
+<text x="940" y="340" class="label">MenuID</text>
+<line x1="910" y1="350" x2="845" y2="385" class="line"/>
+
+<ellipse cx="940" cy="380" rx="30" ry="16" class="attr"/>
+<text x="940" y="380" class="label">Name</text>
+<line x1="910" y1="380" x2="845" y2="395" class="line"/>
+
+<ellipse cx="940" cy="420" rx="28" ry="16" class="attr"/>
+<text x="940" y="420" class="label">Price</text>
+<line x1="912" y1="415" x2="845" y2="405" class="line"/>
+
+<ellipse cx="940" cy="460" rx="35" ry="16" class="attr"/>
+<text x="940" y="460" class="label">Category</text>
+<line x1="905" y1="452" x2="845" y2="415" class="line"/>
+
+<ellipse cx="700" cy="350" rx="30" ry="16" class="attr"/>
+<text x="700" y="350" class="label">Status</text>
+<line x1="725" y1="362" x2="755" y2="385" class="line"/>
+
+<ellipse cx="700" cy="420" rx="30" ry="16" class="attr"/>
+<text x="700" y="420" class="label">Image</text>
+<line x1="728" y1="412" x2="755" y2="405" class="line"/>
+
+<!-- RELATIONSHIP: Has (Canteen - Menu) -->
+<polygon points="800,260 845,240 890,260 845,280" class="rel"/>
+<text x="845" y="260" class="rlabel">Has</text>
+<line x1="800" y1="170" x2="845" y2="240" class="line"/>
+<line x1="845" y1="280" x2="800" y2="380" class="line"/>
+<text x="820" y="225" class="card">1</text>
+<text x="820" y="310" class="card">M</text>
+
+<!-- ===== ENTITY: PREORDER (200, 400) ===== -->
+<rect x="155" y="380" width="90" height="40" rx="3" class="entity"/>
+<text x="200" y="400" class="elabel">Preorder</text>
+
+<ellipse cx="50" cy="300" rx="42" ry="16" class="pk"/>
+<text x="50" y="300" class="label">PreorderID</text>
+<line x1="88" y1="310" x2="165" y2="380" class="line"/>
+
+<ellipse cx="50" cy="340" rx="45" ry="16" class="attr"/>
+<text x="50" y="340" class="label">OrderNumber</text>
+<line x1="95" y1="345" x2="155" y2="385" class="line"/>
+
+<ellipse cx="50" cy="380" rx="35" ry="16" class="attr"/>
+<text x="50" y="380" class="label">Quantity</text>
+<line x1="85" y1="380" x2="155" y2="395" class="line"/>
+
+<ellipse cx="50" cy="420" rx="45" ry="16" class="attr"/>
+<text x="50" y="420" class="label">PreorderDate</text>
+<line x1="95" y1="418" x2="155" y2="405" class="line"/>
+
+<ellipse cx="50" cy="460" rx="30" ry="16" class="attr"/>
+<text x="50" y="460" class="label">Status</text>
+<line x1="80" y1="452" x2="155" y2="415" class="line"/>
+
+<ellipse cx="120" cy="500" rx="45" ry="16" class="attr"/>
+<text x="120" y="500" class="label">PayMethod</text>
+<line x1="150" y1="487" x2="180" y2="420" class="line"/>
+
+<ellipse cx="240" cy="500" rx="45" ry="16" class="attr"/>
+<text x="240" y="500" class="label">PayStatus</text>
+<line x1="225" y1="485" x2="210" y2="420" class="line"/>
+
+<ellipse cx="350" cy="480" rx="42" ry="16" class="attr"/>
+<text x="350" y="480" class="label">PayProof</text>
+<line x1="315" y1="472" x2="240" y2="420" class="line"/>
+
+<ellipse cx="350" cy="440" rx="48" ry="16" class="attr"/>
+<text x="350" y="440" class="label">CustName</text>
+<line x1="305" y1="435" x2="245" y2="415" class="line"/>
+
+<ellipse cx="350" cy="400" rx="48" ry="16" class="attr"/>
+<text x="350" y="400" class="label">CustPhone</text>
+<line x1="305" y1="400" x2="245" y2="400" class="line"/>
+
+<!-- RELATIONSHIP: Places (User - Preorder) -->
+<polygon points="200,260 245,240 290,260 245,280" class="rel"/>
+<text x="245" y="260" class="rlabel">Places</text>
+<line x1="200" y1="170" x2="245" y2="240" class="line"/>
+<line x1="245" y1="280" x2="200" y2="380" class="line"/>
+<text x="215" y="225" class="card">1</text>
+<text x="215" y="310" class="card">M</text>
+
+<!-- RELATIONSHIP: Ordered In (Menu - Preorder) -->
+<polygon points="460,400 505,380 550,400 505,420" class="rel"/>
+<text x="505" y="400" class="rlabel">Ordered In</text>
+<line x1="245" y1="400" x2="460" y2="400" class="line"/>
+<line x1="550" y1="400" x2="755" y2="400" class="line"/>
+<text x="290" y="392" class="card">M</text>
+<text x="720" y="392" class="card">1</text>
+
+<!-- Legend -->
+<rect x="30" y="620" width="300" height="110" rx="8" fill="#f9f9f9" stroke="#ccc"/>
+<text x="50" y="645" style="font-size:13px;font-weight:bold;fill:#333">Legenda:</text>
+<rect x="50" y="660" width="30" height="16" rx="2" class="entity"/>
+<text x="95" y="672" style="font-size:11px;fill:#333">= Entitas</text>
+<ellipse cx="65" cy="695" rx="15" ry="10" class="pk"/>
+<text x="95" y="699" style="font-size:11px;fill:#333">= Primary Key</text>
+<ellipse cx="190" cy="695" rx="15" ry="10" class="attr"/>
+<text x="220" y="699" style="font-size:11px;fill:#333">= Atribut</text>
+<polygon points="55,716 65,710 75,716 65,722" class="rel"/>
+<text x="95" y="720" style="font-size:11px;fill:#333">= Relasi</text>
+</svg>
+</body>
+</html>

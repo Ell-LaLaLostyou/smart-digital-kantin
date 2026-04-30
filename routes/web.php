@@ -13,13 +13,17 @@ use App\Http\Controllers\Admin\DSSController;
 use App\Http\Controllers\User\PreorderController;
 use App\Http\Controllers\DashboardController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [App\Http\Controllers\WelcomeController::class, 'index'])->name('welcome');
+
+Route::get('/canteen/{canteen:slug}', [App\Http\Controllers\WelcomeController::class, 'showCanteen'])->name('canteen.show');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
+
+Route::post('/preorders', [PreorderController::class, 'store'])->name('preorders.store');
+Route::get('/preorders/receipt/{order_number}', [PreorderController::class, 'receipt'])->name('preorders.receipt');
+Route::post('/preorders/receipt/{order_number}/upload', [PreorderController::class, 'uploadProof'])->name('preorders.upload_proof');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -27,7 +31,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // User Routes
-    Route::resource('preorders', PreorderController::class);
+    Route::get('/preorders', [PreorderController::class, 'index'])->name('preorders.index');
+    Route::get('/preorders/create', [PreorderController::class, 'create'])->name('preorders.create');
+    // store is moved outside to allow guest
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -44,6 +50,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Preorders
     Route::get('/preorders', [App\Http\Controllers\Admin\AdminPreorderController::class, 'index'])->name('preorders.index');
     Route::patch('/preorders/{preorder}/status', [App\Http\Controllers\Admin\AdminPreorderController::class, 'updateStatus'])->name('preorders.status');
+    Route::patch('/preorders/{preorder}/verify-payment', [App\Http\Controllers\Admin\AdminPreorderController::class, 'verifyPayment'])->name('preorders.verify_payment');
     
     // Reports
     Route::get('/reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');

@@ -10,7 +10,9 @@
         "barryvdh/laravel-dompdf": "^3.1",
         "kreait/laravel-firebase": "^7.1",
         "laravel/framework": "^13.0",
-        "laravel/tinker": "^3.0"
+        "laravel/passkeys": "*",
+        "laravel/tinker": "^3.0",
+        "symfony/type-info": "7.4.7"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

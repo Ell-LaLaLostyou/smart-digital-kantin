@@ -29,7 +29,7 @@
         }
         .brand-icon {
             width: 34px; height: 34px;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            background: linear-gradient(135deg, #b91c1c, #dc2626);
             border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
         }
@@ -49,7 +49,7 @@
             margin-bottom: 1px;
         }
         .nav-link:hover { background: #f5f6fa; color: #1a1d23; }
-        .nav-link.active { background: #eff0ff; color: #4f46e5; font-weight: 600; }
+        .nav-link.active { background: #fef2f2; color: #b91c1c; font-weight: 600; }
         .nav-link svg { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.8; }
         .nav-link.active svg { opacity: 1; }
 
@@ -130,8 +130,8 @@
             cursor: pointer; border: none; transition: all 0.15s;
             text-decoration: none;
         }
-        .btn-primary { background: #4f46e5; color: #fff; }
-        .btn-primary:hover { background: #4338ca; }
+        .btn-primary { background: #b91c1c; color: #fff; }
+        .btn-primary:hover { background: #991b1b; }
         .btn-success { background: #059669; color: #fff; }
         .btn-success:hover { background: #047857; }
         .btn-outline { background: transparent; color: #6b7280; border: 1px solid #e2e4ea; }
@@ -166,7 +166,7 @@
         /* User avatar */
         .avatar {
             width: 32px; height: 32px; border-radius: 8px;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            background: linear-gradient(135deg, #b91c1c, #dc2626);
             color: white; font-weight: 700; font-size: 13px;
             display: flex; align-items: center; justify-content: center;
         }
@@ -202,8 +202,8 @@
                 </svg>
             </div>
             <div>
-                <div class="brand-name">Smart Kantin</div>
-                <div class="brand-sub">Admin Panel</div>
+                <div class="brand-name">{{ auth()->user()->canteen->name ?? 'Kantin PGRI 11' }}</div>
+                <div class="brand-sub">Admin Dashboard</div>
             </div>
         </div>
 
@@ -311,10 +311,75 @@
                 <div class="alert alert-error">{{ session('error') }}</div>
             @endif
             @yield('content')
+
+    <!-- QR Code & Quick Access Section -->
+    <div style="margin-top: 32px; display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+        <div class="card">
+            <div class="card-header">
+                <h3>Akses QR Kantin (Untuk Tamu)</h3>
+            </div>
+            <div class="card-body" style="display: flex; align-items: flex-start; gap: 32px;">
+                <div id="qrcode" style="background: white; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);"></div>
+                <div style="flex: 1;">
+                    <h4 style="font-size: 14px; font-weight: 700; color: #1e293b; margin-bottom: 8px;">Link Publik Kantin Anda:</h4>
+                    <div style="background: #f8fafc; padding: 12px 16px; border-radius: 8px; border: 1px dashed #cbd5e1; font-family: monospace; font-size: 13px; color: #b91c1c; margin-bottom: 16px; word-break: break-all;">
+                        {{ url('/' . auth()->user()->canteen->slug) }}
+                    </div>
+                    <p style="font-size: 13px; color: #64748b; line-height: 1.5; margin-bottom: 20px;">
+                        Cetak QR Code ini dan tempelkan di meja atau area kantin. Tamu dapat langsung menscan QR ini untuk melihat menu dan memesan tanpa perlu login.
+                    </p>
+                    <div style="display: flex; gap: 12px;">
+                        <button onclick="downloadQR()" class="btn btn-primary btn-sm">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="margin-right: 4px;"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            Download QR
+                        </button>
+                        <button onclick="window.print()" class="btn btn-outline btn-sm">Cetak Halaman</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card" style="background: #fffbeb; border-color: #fef3c7;">
+            <div class="card-body">
+                <div style="font-size: 24px; margin-bottom: 12px;">💡</div>
+                <h4 style="font-size: 14px; font-weight: 700; color: #92400e; margin-bottom: 8px;">Tips Penggunaan QR</h4>
+                <ul style="font-size: 12px; color: #b45309; padding-left: 20px; line-height: 1.8;">
+                    <li>Gunakan kertas foto untuk hasil cetak terbaik.</li>
+                    <li>Letakkan QR di tempat yang mudah terlihat.</li>
+                    <li>Ingatkan tamu untuk mengisi nomor meja di form.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
         </div>
     </div>
 </div>
 @stack('scripts')
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+    const canteenUrl = "{{ url('/' . (auth()->user()->canteen->slug ?? '')) }}";
+    
+    // Generate QR Code
+    new QRCode(document.getElementById("qrcode"), {
+        text: canteenUrl,
+        width: 160,
+        height: 160,
+        colorDark : "#1e293b",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.H
+    });
+
+    function downloadQR() {
+        const qrCanvas = document.querySelector('#qrcode canvas');
+        if (qrCanvas) {
+            const link = document.createElement('a');
+            link.download = 'QR-Kantin-{{ auth()->user()->canteen->slug ?? "kantin" }}.png';
+            link.href = qrCanvas.toDataURL("image/png");
+            link.click();
+        }
+    }
+</script>
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -342,6 +407,12 @@
         }
 
         const data = snapshot.val();
+        const userCanteenId = {{ auth()->user()->canteen_id ?? 'null' }};
+        
+        if (userCanteenId && data.canteen_id != userCanteenId) {
+            return;
+        }
+
         showNotification(`📦 Preorder Baru!`, `${data.user_name} memesan ${data.quantity} porsi ${data.menu_name}`);
         
         // Update dashboard count if we are on dashboard

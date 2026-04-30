@@ -68,7 +68,33 @@
                 @endif
             </div>
             <button type="submit" class="btn">Masuk</button>
+            
+            <div style="display: flex; align-items: center; margin: 20px 0; color: #9198a8; font-size: 12px;">
+                <div style="flex: 1; height: 1px; background: #e8eaf0;"></div>
+                <div style="margin: 0 10px;">atau</div>
+                <div style="flex: 1; height: 1px; background: #e8eaf0;"></div>
+            </div>
+
+            <button type="button" id="passkey-login" class="btn" style="background: #fff; color: #1a1d23; border: 1px solid #d1d5db; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/>
+                    <path d="M12 6a1 1 0 1 0 1 1 1 1 0 0 0-1-1zm0 10a1 1 0 1 0-1-1 1 1 0 0 0 1 1zm4-5a1 1 0 1 0-1-1 1 1 0 0 0 1 1zM8 11a1 1 0 1 0-1-1 1 1 0 0 0 1 1z"/>
+                    <path d="M12 12a3 3 0 1 0 3 3 3 3 0 0 0-3-3z"/>
+                </svg>
+                Masuk dengan Face ID / Passkey
+            </button>
         </form>
+
+        <script>
+            document.getElementById('passkey-login').addEventListener('click', async () => {
+                try {
+                    await window.Passkeys.verify();
+                } catch (error) {
+                    console.error('Passkey verification failed:', error);
+                    alert('Gagal autentikasi Face ID / Passkey. Pastikan perangkat Anda mendukung dan sudah didaftarkan.');
+                }
+            });
+        </script>
 
         <p class="footer-link">Belum punya akun? <a href="{{ route('register') }}">Daftar gratis</a></p>
     </div>

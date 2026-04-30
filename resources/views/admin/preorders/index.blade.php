@@ -12,20 +12,29 @@
     <div style="overflow-x:auto;">
         <table>
             <thead><tr>
+                <th>No. Pesanan</th>
                 <th>Pelanggan</th>
                 <th>Menu</th>
                 <th>Jumlah</th>
                 <th>Tgl Ambil</th>
+                <th>Status Pesanan</th>
                 <th>Pembayaran</th>
-                <th>Status</th>
                 <th style="text-align:right;">Aksi</th>
             </tr></thead>
             <tbody>
                 @forelse($preorders as $po)
                 <tr>
                     <td>
-                        <strong>{{ $po->user->name }}</strong><br>
-                        <span style="font-size:11px; color:#9198a8;">{{ $po->user->email }}</span>
+                        <strong style="color: #b91c1c; font-family: monospace;">{{ $po->order_number ?? 'LEGACY' }}</strong>
+                    </td>
+                    <td>
+                        @if($po->user)
+                            <strong>{{ $po->user->name }}</strong><br>
+                            <span style="font-size:11px; color:#9198a8;">{{ $po->user->email }}</span>
+                        @else
+                            <strong>{{ $po->customer_name }}</strong> <span class="badge badge-gray" style="font-size:9px;">GUEST</span><br>
+                            <span style="font-size:11px; color:#9198a8;">{{ $po->customer_phone }}</span>
+                        @endif
                     </td>
                     <td><strong>{{ $po->menu->name }}</strong></td>
                     <td>{{ $po->quantity }} Porsi</td>
@@ -37,9 +46,24 @@
                         </span>
                     </td>
                     <td>
-                        <span class="badge {{ $po->status == 'pending' ? 'badge-yellow' : ($po->status == 'completed' ? 'badge-green' : 'badge-red') }}">
-                            {{ strtoupper($po->status) }}
+                        <span style="background: {{ $statusBg ?? '#e5e7eb' }}; color: {{ $statusColor ?? '#374151' }}; padding: 4px 10px; border-radius: 99px; font-size: 10px; font-weight: 800; text-transform: uppercase;">
+                            {{ $po->status }}
                         </span>
+                    </td>
+                    <td>
+                        @if($po->payment_status == 'paid')
+                            <span style="color: #059669; font-weight: 800; font-size: 11px;">PAID ✓</span>
+                        @elseif($po->payment_status == 'pending_verification')
+                            <div style="display: flex; flex-direction: column; gap: 4px;">
+                                <a href="{{ asset('storage/' . $po->payment_proof) }}" target="_blank" style="color: #6366f1; font-size: 11px; font-weight: 700;">Lihat Bukti</a>
+                                <form action="{{ route('admin.preorders.verify_payment', $po) }}" method="POST">
+                                    @csrf @method('PATCH')
+                                    <button type="submit" class="btn btn-primary btn-sm" style="padding: 2px 8px; font-size: 10px;">Verifikasi</button>
+                                </form>
+                            </div>
+                        @else
+                            <span style="color: #64748b; font-size: 11px; font-weight: 700;">{{ strtoupper($po->payment_method) }} (UNPAID)</span>
+                        @endif
                     </td>
                     <td style="text-align:right;">
                         @if($po->status == 'pending')

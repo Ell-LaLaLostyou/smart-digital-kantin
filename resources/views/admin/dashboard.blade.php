@@ -125,4 +125,53 @@
         </table>
     </div>
 </div>
+<!-- Security / Passkeys -->
+<div class="card" style="margin-top: 16px;">
+    <div class="card-header">
+        <h3>Keamanan Biometrik (Face ID)</h3>
+        <div style="font-size: 18px;">🛡️</div>
+    </div>
+    <div class="card-body">
+        <p style="color: #6b7280; font-size: 13px; margin-bottom: 16px;">Gunakan Face ID atau sidik jari untuk login admin yang lebih cepat dan aman.</p>
+        
+        <div id="passkey-list" style="margin-bottom: 16px;">
+            @if(auth()->user()->passkeys->count() > 0)
+                @foreach(auth()->user()->passkeys as $passkey)
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: #f8fafc; border-radius: 8px; margin-bottom: 8px; border: 1px solid #e8eaf0;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <svg width="16" height="16" fill="none" stroke="#64748b" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A10.003 10.003 0 0112 3c1.788 0 3.454.467 4.9 1.282m-4.63 15.818c1.744-2.772 2.753-6.054 2.753-9.571 0-1.127-.094-2.233-.275-3.312m-3.13 12.883a10.004 10.004 0 01-4.708-3.935m11.233-10.3c1.446 1.022 2.593 2.41 3.284 4.034m-1.545 10.224a10.003 10.003 0 01-4.708 3.935m-1.245-4.951a5.003 5.003 0 01-5.753-5.753m11.506 0a5.003 5.003 0 01-5.753 5.753"></path></svg>
+                            <span style="font-size: 13px; font-weight: 500; color: #334155;">{{ $passkey->name }}</span>
+                        </div>
+                        <form action="/user/passkeys/{{ $passkey->id }}" method="POST" style="margin: 0;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" style="background: none; border: none; color: #ef4444; font-size: 11px; cursor: pointer; font-weight: 600;">Hapus</button>
+                        </form>
+                    </div>
+                @endforeach
+            @else
+                <p style="font-size: 13px; color: #94a3b8; font-style: italic; margin-bottom: 16px;">Belum ada perangkat biometrik terdaftar.</p>
+            @endif
+        </div>
+
+        <button type="button" id="register-passkey" style="background: #1a1d23; color: #fff; border: none; padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.15s;">
+            Daftarkan Perangkat Ini
+        </button>
+    </div>
+</div>
+
+<script>
+    document.getElementById('register-passkey').addEventListener('click', async () => {
+        const name = prompt('Beri nama perangkat ini (misal: Laptop Kerja, iPhone Admin):', 'Perangkat Admin');
+        if (!name) return;
+
+        try {
+            await window.Passkeys.register({ name: name });
+            window.location.reload();
+        } catch (error) {
+            console.error('Passkey registration failed:', error);
+            alert('Gagal mendaftarkan perangkat. Pastikan browser lu dukung Face ID / Passkey.');
+        }
+    });
+</script>
 @endsection
