@@ -19,8 +19,8 @@ Aplikasi web manajemen kantin sekolah yang gua kembangkan untuk SMK PGRI 11 Jaka
 ## Cara Install
 
 ```bash
-git clone [URL_REPO]
-cd [NAMA_FOLDER]
+git clone clone https://github.com/Ell-LaLaLostyou/smart-digital-kantin.git
+cd smart-digital-kantin
 composer install
 npm install && npm run build
 cp .env.example .env
