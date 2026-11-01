@@ -71,9 +71,12 @@
                     <a href="{{ route('preorders.index') }}" class="nav-link {{ request()->routeIs('preorders.*') ? 'active' : '' }}">Pesanan Saya</a>
                 </div>
                 
-                <div class="user-menu">
-                    <div class="avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
-                    <form method="POST" action="{{ route('logout') }}">
+                <div class="user-menu" style="display: flex; align-items: center; gap: 12px;">
+                    <a href="{{ route('profile.edit') }}" style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: inherit; padding: 4px 8px; border-radius: 8px; transition: background 0.15s;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='none'">
+                        <div class="avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
+                        <span style="font-weight: 500; font-size: 13px; color: #475569;">Profil</span>
+                    </a>
+                    <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
                         @csrf
                         <button type="submit" class="btn btn-outline btn-sm" style="padding: 4px 10px; font-size: 12px;">Logout</button>
                     </form>

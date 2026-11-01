@@ -202,8 +202,20 @@
                 </svg>
             </div>
             <div>
-                <div class="brand-name">{{ auth()->user()->canteen->name ?? 'Kantin PGRI 11' }}</div>
-                <div class="brand-sub">Admin Dashboard</div>
+                <div class="brand-name">
+                    @if(auth()->user()->role === 'super_admin')
+                        Admin Core System
+                    @else
+                        {{ auth()->user()->canteen->name ?? 'Kantin PGRI 11' }}
+                    @endif
+                </div>
+                <div class="brand-sub">
+                    @if(auth()->user()->role === 'super_admin')
+                        Master Control
+                    @else
+                        Canteen Dashboard
+                    @endif
+                </div>
             </div>
         </div>
 
@@ -213,8 +225,17 @@
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
                 Dashboard
             </a>
-        </div>
-
+            @if(auth()->user()->role === 'super_admin')
+            <a href="{{ route('admin.canteens.index') }}" class="nav-link {{ request()->routeIs('admin.canteens.*') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                Manajemen Kantin
+            </a>
+            <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                Manajemen User
+            </a>
+            @endif
+        </div>        @if(auth()->user()->role !== 'super_admin')
         <div class="sidebar-section">
             <div class="sidebar-label">Operasional</div>
             <a href="{{ route('admin.menus.index') }}" class="nav-link {{ request()->routeIs('admin.menus.*') ? 'active' : '' }}">
@@ -257,6 +278,11 @@
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                 Simulasi
             </a>
+        </div>
+        @endif
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">Monitoring & Laporan</div>
             <a href="{{ route('admin.reports.index') }}" class="nav-link {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                 Laporan Keuangan
@@ -268,13 +294,16 @@
         </div>
 
         <div class="sidebar-footer">
-            <div style="display:flex; align-items:center; gap:10px; padding: 8px 10px; margin-bottom:4px;">
+            <a href="{{ route('profile.edit') }}" style="display:flex; align-items:center; gap:10px; padding: 8px 10px; margin-bottom:4px; text-decoration:none; color:inherit; border-radius:8px; transition: background 0.15s;" onmouseover="this.style.background='#f5f6fa'" onmouseout="this.style.background='none'">
                 <div class="avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
-                <div style="min-width:0;">
+                <div style="min-width:0; flex-grow:1;">
                     <div style="font-size:13px; font-weight:600; color:#1a1d23; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ auth()->user()->name }}</div>
-                    <div style="font-size:11px; color:#9198a8;">Administrator</div>
+                    <div style="font-size:11px; color:#9198a8; display:flex; align-items:center; gap:4px;">
+                        <span>{{ auth()->user()->role === 'super_admin' ? 'Admin Core' : 'Admin Kantin' }}</span>
+                        <span style="color:#b91c1c; font-weight:600;">• Edit</span>
+                    </div>
                 </div>
-            </div>
+            </a>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit" class="nav-link" style="width:100%; background:none; border:none; cursor:pointer; color:#e11d48; font-size:13px; justify-content:flex-start;">
@@ -312,6 +341,7 @@
             @endif
             @yield('content')
 
+    @if(auth()->user()->canteen)
     <!-- QR Code & Quick Access Section -->
     <div style="margin-top: 32px; display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
         <div class="card">
@@ -323,7 +353,7 @@
                 <div style="flex: 1;">
                     <h4 style="font-size: 14px; font-weight: 700; color: #1e293b; margin-bottom: 8px;">Link Publik Kantin Anda:</h4>
                     <div style="background: #f8fafc; padding: 12px 16px; border-radius: 8px; border: 1px dashed #cbd5e1; font-family: monospace; font-size: 13px; color: #b91c1c; margin-bottom: 16px; word-break: break-all;">
-                        {{ url('/' . auth()->user()->canteen->slug) }}
+                        {{ url('/canteen/' . auth()->user()->canteen->slug) }}
                     </div>
                     <p style="font-size: 13px; color: #64748b; line-height: 1.5; margin-bottom: 20px;">
                         Cetak QR Code ini dan tempelkan di meja atau area kantin. Tamu dapat langsung menscan QR ini untuk melihat menu dan memesan tanpa perlu login.
@@ -351,6 +381,7 @@
             </div>
         </div>
     </div>
+    @endif
         </div>
     </div>
 </div>

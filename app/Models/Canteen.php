@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Canteen extends Model
 {
-    protected $fillable = ['name', 'slug', 'description', 'image_url', 'owner_id'];
+    protected $fillable = ['name', 'slug', 'description', 'image_url', 'payment_qr_url', 'owner_id'];
 
     public function owner()
     {

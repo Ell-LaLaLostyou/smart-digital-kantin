@@ -14,12 +14,25 @@ class EcoController extends Controller
     public function index()
     {
         // Calculate Total Impact
-        $totalDonated = Donation::join('food_wastes', 'donations.food_waste_id', '=', 'food_wastes.id')
-            ->sum('food_wastes.quantity_waste');
+        $queryDonations = Donation::join('food_wastes', 'donations.food_waste_id', '=', 'food_wastes.id');
+        $querySales = Sale::query();
+        $queryProd = Production::query();
+        $queryWaste = FoodWaste::query();
+        $queryHistory = Donation::with('foodWaste.menu');
 
-        $totalSales = Sale::sum('quantity_sold');
-        $totalProduction = Production::sum('quantity');
-        $totalWasteActual = FoodWaste::sum('quantity_waste');
+        if (auth()->user()->role !== 'super_admin') {
+            $canteenId = auth()->user()->canteen_id;
+            $queryDonations->where('donations.canteen_id', $canteenId);
+            $querySales->where('canteen_id', $canteenId);
+            $queryProd->where('canteen_id', $canteenId);
+            $queryWaste->where('canteen_id', $canteenId);
+            $queryHistory->where('canteen_id', $canteenId);
+        }
+
+        $totalDonated = $queryDonations->sum('food_wastes.quantity_waste');
+        $totalSales = $querySales->sum('quantity_sold');
+        $totalProduction = $queryProd->sum('quantity');
+        $totalWasteActual = $queryWaste->sum('quantity_waste');
         
         // Meals saved = Total Donated + (Total Production - Total Waste Actual - Total Sales ??? No)
         // Actually, meals saved from bin = Total Donated.
@@ -35,7 +48,7 @@ class EcoController extends Controller
         $co2Saved = $mealsSaved * 1.0; // in kg
         $waterSaved = $mealsSaved * 400; // in liters
         
-        $impactHistory = Donation::with('foodWaste.menu')
+        $impactHistory = $queryHistory
             ->orderBy('donation_date', 'desc')
             ->take(10)
             ->get();

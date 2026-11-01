@@ -15,25 +15,51 @@ class DSSController extends Controller
 {
     public function index()
     {
-        $results = DssResult::with('menu')->orderBy('calculation_date', 'desc')->get();
+        $query = DssResult::with('menu')->orderBy('calculation_date', 'desc');
+        if (auth()->user()->role !== 'super_admin') {
+            $query->where('canteen_id', auth()->user()->canteen_id);
+        }
+        $results = $query->get();
         return view('admin.dss.index', compact('results'));
     }
 
     public function calculate()
     {
-        $menus = Menu::where('status', 'available')->get();
+        $user = auth()->user();
+        $isSuper = $user->role === 'super_admin';
+        
+        $queryMenus = Menu::where('status', 'available');
+        if (!$isSuper) {
+            $queryMenus->where('canteen_id', $user->canteen_id);
+        }
+        $menus = $queryMenus->get();
+        
         $date = now()->format('Y-m-d');
         // Calculate based on last 7 days data
         $startDate = now()->subDays(7)->format('Y-m-d');
 
         foreach ($menus as $menu) {
-            $totalProduction = Production::where('menu_id', $menu->id)->whereBetween('production_date', [$startDate, $date])->sum('quantity');
-            $totalSales = Sale::where('menu_id', $menu->id)->whereBetween('sale_date', [$startDate, $date])->sum('quantity_sold');
-            $totalWaste = FoodWaste::where('menu_id', $menu->id)->whereBetween('production_date', [$startDate, $date])->sum('quantity_waste');
+            $canteenId = $menu->canteen_id;
+            
+            $totalProduction = Production::where('menu_id', $menu->id)
+                ->where('canteen_id', $canteenId)
+                ->whereBetween('production_date', [$startDate, $date])
+                ->sum('quantity');
+            $totalSales = Sale::where('menu_id', $menu->id)
+                ->where('canteen_id', $canteenId)
+                ->whereBetween('sale_date', [$startDate, $date])
+                ->sum('quantity_sold');
+            $totalWaste = FoodWaste::where('menu_id', $menu->id)
+                ->where('canteen_id', $canteenId)
+                ->whereBetween('production_date', [$startDate, $date])
+                ->sum('quantity_waste');
             
             // Upcoming preorders for tomorrow
             $tomorrow = now()->addDay()->format('Y-m-d');
-            $upcomingPreorder = Preorder::where('menu_id', $menu->id)->where('preorder_date', $tomorrow)->sum('quantity');
+            $upcomingPreorder = Preorder::where('menu_id', $menu->id)
+                ->where('canteen_id', $canteenId)
+                ->where('preorder_date', $tomorrow)
+                ->sum('quantity');
 
             // Prevent division by zero
             if ($totalProduction == 0) {
@@ -66,14 +92,12 @@ class DSSController extends Controller
             }
 
             DssResult::updateOrCreate(
-                ['menu_id' => $menu->id, 'calculation_date' => $date],
+                ['menu_id' => $menu->id, 'calculation_date' => $date, 'canteen_id' => $canteenId],
                 [
                     'recommendation' => $recommendation,
                     'reason' => implode(' ', $reasons)
                 ]
             );
-
-            // TODO: Trigger Firebase Notification if recommendation is KURANGI or TAMBAH
         }
 
         return redirect()->route('admin.dss.index')->with('success', 'DSS Analysis completed successfully.');

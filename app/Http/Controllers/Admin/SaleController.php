@@ -13,13 +13,21 @@ class SaleController extends Controller
 {
     public function index()
     {
-        $sales = Sale::with('menu')->orderBy('sale_date', 'desc')->get();
+        $query = Sale::with('menu')->orderBy('sale_date', 'desc');
+        if (auth()->user()->role !== 'super_admin') {
+            $query->where('canteen_id', auth()->user()->canteen_id);
+        }
+        $sales = $query->get();
         return view('admin.sales.index', compact('sales'));
     }
 
     public function create()
     {
-        $menus = Menu::where('status', 'available')->get();
+        $query = Menu::where('status', 'available');
+        if (auth()->user()->role !== 'super_admin') {
+            $query->where('canteen_id', auth()->user()->canteen_id);
+        }
+        $menus = $query->get();
         return view('admin.sales.create', compact('menus'));
     }
 
@@ -31,35 +39,51 @@ class SaleController extends Controller
             'sale_date' => 'required|date',
         ]);
 
+        if (auth()->user()->role !== 'super_admin') {
+            $validated['canteen_id'] = auth()->user()->canteen_id;
+        }
+
         $sale = Sale::create($validated);
 
         // Auto Calculate Waste
-        $this->calculateWaste($sale->menu_id, $sale->sale_date);
+        $this->calculateWaste($sale->menu_id, $sale->sale_date, $sale->canteen_id);
 
         return redirect()->route('admin.sales.index')->with('success', 'Sale recorded and waste calculated automatically.');
     }
 
     public function destroy(Sale $sale)
     {
+        if (auth()->user()->role !== 'super_admin' && $sale->canteen_id !== auth()->user()->canteen_id) {
+            abort(403);
+        }
         $menu_id = $sale->menu_id;
         $date = $sale->sale_date;
+        $canteen_id = $sale->canteen_id;
         $sale->delete();
         
         // Recalculate waste after deletion
-        $this->calculateWaste($menu_id, $date);
+        $this->calculateWaste($menu_id, $date, $canteen_id);
 
         return redirect()->route('admin.sales.index')->with('success', 'Sale deleted successfully.');
     }
 
-    private function calculateWaste($menu_id, $date)
+    private function calculateWaste($menu_id, $date, $canteen_id = null)
     {
-        $production = Production::where('menu_id', $menu_id)->where('production_date', $date)->sum('quantity');
-        $sold = Sale::where('menu_id', $menu_id)->where('sale_date', $date)->sum('quantity_sold');
+        $productionQuery = Production::where('menu_id', $menu_id)->where('production_date', $date);
+        $saleQuery = Sale::where('menu_id', $menu_id)->where('sale_date', $date);
+
+        if ($canteen_id) {
+            $productionQuery->where('canteen_id', $canteen_id);
+            $saleQuery->where('canteen_id', $canteen_id);
+        }
+
+        $production = $productionQuery->sum('quantity');
+        $sold = $saleQuery->sum('quantity_sold');
 
         $waste = max(0, $production - $sold);
 
         FoodWaste::updateOrCreate(
-            ['menu_id' => $menu_id, 'production_date' => $date],
+            ['menu_id' => $menu_id, 'production_date' => $date, 'canteen_id' => $canteen_id],
             ['quantity_waste' => $waste]
         );
     }

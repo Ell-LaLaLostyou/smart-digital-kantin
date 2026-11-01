@@ -3,15 +3,48 @@
 @section('header_title', 'Dashboard')
 
 @section('content')
-@php
-    $totalMenus     = \App\Models\Menu::count();
-    $todaySales     = \App\Models\Sale::whereDate('sale_date', today())->sum('quantity_sold');
-    $todayWaste     = \App\Models\FoodWaste::whereDate('production_date', today())->sum('quantity_waste');
-    $todayProd      = \App\Models\Production::whereDate('production_date', today())->sum('quantity');
-    $tomorrowPO     = \App\Models\Preorder::whereDate('preorder_date', \Carbon\Carbon::tomorrow())->sum('quantity');
-    $efficiencyRate = $todayProd > 0 ? round(($todaySales / $todayProd) * 100) : 0;
-    $latestDss      = \App\Models\DssResult::with('menu')->orderBy('calculation_date','desc')->take(5)->get();
-@endphp
+@if($isSuper)
+<div class="alert alert-success" style="background: #eff6ff; border-color: #bfdbfe; color: #1e40af; margin-bottom: 24px;">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+    <strong>Mode Admin Core Aktif:</strong> Anda sedang melihat monitoring sistem secara global (seluruh kantin).
+</div>
+
+<!-- System Overview Section (Super Admin Only) -->
+<div class="section-header">
+    <h2>Ikhtisar Sistem</h2>
+    <p>Status operasional seluruh unit kantin.</p>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; margin-bottom: 32px;">
+    @foreach($canteens as $canteen)
+    <div class="card" style="border-left: 4px solid #4f46e5;">
+        <div class="card-body">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <h4 style="font-weight: 700; color: #1e293b;">{{ $canteen->name }}</h4>
+                <span class="badge badge-green">Online</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div style="background: #f8fafc; padding: 8px; border-radius: 6px; text-align: center;">
+                    <div style="font-size: 10px; color: #94a3b8; text-transform: uppercase;">Menu</div>
+                    <div style="font-size: 16px; font-weight: 700; color: #4f46e5;">{{ $canteen->menus_count }}</div>
+                </div>
+                <div style="background: #f8fafc; padding: 8px; border-radius: 6px; text-align: center;">
+                    <div style="font-size: 10px; color: #94a3b8; text-transform: uppercase;">Staff</div>
+                    <div style="font-size: 16px; font-weight: 700; color: #4f46e5;">{{ $canteen->admins_count }}</div>
+                </div>
+            </div>
+            <a href="{{ route('admin.canteens.edit', $canteen) }}" style="display: block; text-align: center; margin-top: 12px; font-size: 12px; color: #6366f1; text-decoration: none; font-weight: 600;">Kelola Kantin →</a>
+        </div>
+    </div>
+    @endforeach
+    <a href="{{ route('admin.canteens.create') }}" style="display: flex; align-items: center; justify-content: center; border: 2px dashed #e2e8f0; border-radius: 12px; text-decoration: none; color: #94a3b8; transition: all 0.2s;" onmouseover="this.style.borderColor='#4f46e5'; this.style.color='#4f46e5';" onmouseout="this.style.borderColor='#e2e8f0'; this.style.color='#94a3b8';">
+        <div style="text-align: center;">
+            <div style="font-size: 24px; margin-bottom: 4px;">+</div>
+            <div style="font-size: 13px; font-weight: 600;">Tambah Kantin Baru</div>
+        </div>
+    </a>
+</div>
+@endif
 
 <!-- KPI Cards -->
 <div class="kpi-grid">
@@ -64,6 +97,7 @@
         </div>
     </div>
 
+    @if(!$isSuper)
     <!-- Quick Actions -->
     <div class="card">
         <div class="card-header"><h3>Aksi Cepat</h3></div>
@@ -91,6 +125,7 @@
             </form>
         </div>
     </div>
+    @endif
 </div>
 
 <!-- DSS Results Table -->
@@ -125,6 +160,26 @@
         </table>
     </div>
 </div>
+@if(!$isSuper && auth()->user()->canteen)
+<div class="card" style="margin-top: 16px;">
+    <div class="card-header">
+        <h3>QRIS Pembayaran Kantin</h3>
+        <div style="font-size: 18px;">💸</div>
+    </div>
+    <div class="card-body" style="text-align: center;">
+        @if(auth()->user()->canteen->payment_qr_url)
+            <img src="{{ auth()->user()->canteen->payment_qr_url }}" alt="QRIS {{ auth()->user()->canteen->name }}" style="max-width: 200px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 12px;">
+            <p style="font-size: 13px; color: #64748b;">QRIS ini akan tampil di struk digital pelanggan saat mereka memilih metode bayar non-tunai.</p>
+        @else
+            <div style="padding: 24px; background: #f8fafc; border-radius: 12px; border: 1px dashed #cbd5e1; margin-bottom: 12px;">
+                <p style="font-size: 13px; color: #94a3b8; font-style: italic;">Belum ada QRIS pembayaran yang diatur.</p>
+            </div>
+            <p style="font-size: 12px; color: #64748b;">Hubungi **Admin Core** untuk mengunggah link gambar QRIS kantin Anda agar pelanggan bisa membayar secara cashless.</p>
+        @endif
+    </div>
+</div>
+@endif
+
 <!-- Security / Passkeys -->
 <div class="card" style="margin-top: 16px;">
     <div class="card-header">

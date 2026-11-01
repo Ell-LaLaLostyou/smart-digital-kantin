@@ -11,6 +11,13 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // Admin Core user
+        User::firstOrCreate(['email' => 'core@kantin.com'], [
+            'name'     => 'Admin Core',
+            'password' => Hash::make('core123'),
+            'role'     => 'super_admin',
+        ]);
+
         // Admin user
         User::firstOrCreate(['email' => 'admin@kantin.com'], [
             'name'     => 'Admin Kantin',

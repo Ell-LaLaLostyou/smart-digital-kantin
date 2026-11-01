@@ -11,13 +11,21 @@ class FoodWasteController extends Controller
 {
     public function index()
     {
-        $wastes = FoodWaste::with('menu', 'donations')->orderBy('production_date', 'desc')->get();
+        $query = FoodWaste::with('menu', 'donations')->orderBy('production_date', 'desc');
+        if (auth()->user()->role !== 'super_admin') {
+            $query->where('canteen_id', auth()->user()->canteen_id);
+        }
+        $wastes = $query->get();
         $recipients = \App\Models\Recipient::all();
         return view('admin.food_wastes.index', compact('wastes', 'recipients'));
     }
 
     public function donate(Request $request, FoodWaste $foodWaste)
     {
+        if (auth()->user()->role !== 'super_admin' && $foodWaste->canteen_id !== auth()->user()->canteen_id) {
+            abort(403);
+        }
+
         $request->validate([
             'status' => 'required|in:layak,hampir_kadaluarsa,tidak_layak',
             'recipient_id' => 'nullable|exists:recipients,id',
@@ -32,6 +40,7 @@ class FoodWasteController extends Controller
             'recipient_id' => $request->recipient_id,
             'status' => $request->status,
             'donation_date' => now()->format('Y-m-d'),
+            'canteen_id' => $foodWaste->canteen_id,
         ]);
 
         return redirect()->route('admin.food-wastes.index')->with('success', 'Food marked for donation.');

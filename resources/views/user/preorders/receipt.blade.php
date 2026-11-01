@@ -129,8 +129,16 @@
                         <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         Instruksi Pembayaran
                     </h3>
+                    
+                    @if($preorder->canteen->payment_qr_url)
+                        <div style="text-align: center; margin-bottom: 16px;">
+                            <img src="{{ $preorder->canteen->payment_qr_url }}" alt="QRIS {{ $preorder->canteen->name }}" style="max-width: 100%; border-radius: 12px; border: 4px solid white; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                            <p style="font-size: 12px; color: #b45309; margin-top: 8px; font-weight: 600;">Scan QRIS di atas untuk membayar</p>
+                        </div>
+                    @endif
+
                     <p style="font-size: 13px; color: #b45309; line-height: 1.5; margin-bottom: 16px;">
-                        Silakan transfer ke rekening <strong>BCA 123456789 a/n Kantin SMK PGRI 11</strong> atau scan QRIS yang tersedia di kantin, lalu unggah bukti bayar di bawah ini.
+                        Silakan selesaikan pembayaran ke <strong>{{ $preorder->canteen->name }}</strong> melalui QRIS di atas atau tanyakan petugas kantin untuk detail rekening, lalu unggah bukti bayar di bawah ini.
                     </p>
                     
                     <form action="{{ route('preorders.upload_proof', $preorder->order_number) }}" method="POST" enctype="multipart/form-data">

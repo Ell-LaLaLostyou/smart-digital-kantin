@@ -13,8 +13,16 @@ class SimulationController extends Controller
 {
     public function index()
     {
-        $simulations = Simulation::with('menu')->orderBy('simulation_date', 'desc')->get();
-        $menus = Menu::where('status', 'available')->get();
+        $querySims = Simulation::with('menu')->orderBy('simulation_date', 'desc');
+        $queryMenus = Menu::where('status', 'available');
+        
+        if (auth()->user()->role !== 'super_admin') {
+            $querySims->where('canteen_id', auth()->user()->canteen_id);
+            $queryMenus->where('canteen_id', auth()->user()->canteen_id);
+        }
+        
+        $simulations = $querySims->get();
+        $menus = $queryMenus->get();
         return view('admin.simulations.index', compact('simulations', 'menus'));
     }
 
@@ -27,12 +35,19 @@ class SimulationController extends Controller
 
         $menu_id = $request->menu_id;
         $simulated_production = $request->simulated_production;
+        $canteen_id = auth()->user()->role !== 'super_admin' ? auth()->user()->canteen_id : Menu::find($menu_id)->canteen_id;
 
         // Calculate historical rate (last 14 days)
         $startDate = now()->subDays(14)->format('Y-m-d');
         
-        $totalProd = Production::where('menu_id', $menu_id)->where('production_date', '>=', $startDate)->sum('quantity');
-        $totalSales = Sale::where('menu_id', $menu_id)->where('sale_date', '>=', $startDate)->sum('quantity_sold');
+        $totalProd = Production::where('menu_id', $menu_id)
+            ->where('production_date', '>=', $startDate)
+            ->where('canteen_id', $canteen_id)
+            ->sum('quantity');
+        $totalSales = Sale::where('menu_id', $menu_id)
+            ->where('sale_date', '>=', $startDate)
+            ->where('canteen_id', $canteen_id)
+            ->sum('quantity_sold');
 
         $conversionRate = $totalProd > 0 ? ($totalSales / $totalProd) : 0;
 
@@ -50,6 +65,7 @@ class SimulationController extends Controller
             'expected_waste' => $expected_waste,
             'efficiency' => $efficiency,
             'simulation_date' => now()->format('Y-m-d'),
+            'canteen_id' => $canteen_id,
         ]);
 
         return redirect()->route('admin.simulations.index')->with('success', 'Simulation generated successfully.');

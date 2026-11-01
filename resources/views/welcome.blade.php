@@ -154,9 +154,7 @@
     <nav class="navbar">
         <div style="max-width: 1200px; margin: 0 auto; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;">
             <a href="/" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
-                <div style="width: 36px; height: 36px; background: #b91c1c; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                </div>
+                <img src="{{ asset('images/logo_smk_pgri.png') }}" alt="Logo SMK PGRI 11 Jakarta" style="width: auto; height: 36px; object-fit: contain;">
                 <span style="font-weight: 800; font-size: 18px; color: #1e293b; letter-spacing: -0.02em;">SmartCanteen</span>
             </a>
             
@@ -176,7 +174,7 @@
         <div class="hero-container">
             <div class="hero-content">
                 <div style="color: #b91c1c; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px;">Portal Kantin Digital</div>
-                <h1 style="font-size: 48px; font-weight: 800; color: #0f172a; line-height: 1.1; margin-bottom: 20px;">Pesan Makan Siang <span style="color: #b91c1c;">Tanpa Antre</span></h1>
+                <h1 style="font-size: 48px; font-weight: 800; color: #0f172a; line-height: 1.1; margin-bottom: 20px;">Pesan Makan Siang <span style="color: #b91c1c;">Tanpa Antri</span></h1>
                 <p style="font-size: 18px; color: #64748b; line-height: 1.6; margin-bottom: 32px; max-width: 500px;">
                     Nikmati kemudahan memesan makanan dari berbagai kantin di SMK PGRI 11 Jakarta secara online atau melalui scan QR di meja.
                 </p>

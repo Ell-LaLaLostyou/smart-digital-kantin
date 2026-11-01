@@ -18,7 +18,7 @@
 <div class="card" id="add-menu-form" style="margin-bottom: 32px;">
     <div class="card-header"><h3>Tambah Menu Baru</h3></div>
     <div class="card-body">
-        <form action="{{ route('admin.menus.store') }}" method="POST">
+        <form action="{{ route('admin.menus.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="form-grid" style="margin-bottom: 16px;">
                 <div>
@@ -49,6 +49,11 @@
             <div style="margin-bottom: 20px;">
                 <label class="form-label">Deskripsi Singkat</label>
                 <input type="text" name="description" class="form-input" placeholder="Opsional: Deskripsi menu" value="{{ old('description') }}">
+            </div>
+            <div style="margin-bottom: 20px;">
+                <label class="form-label">Gambar Menu (Opsional)</label>
+                <input type="file" name="image" class="form-input" accept="image/png, image/jpeg, image/jpg" style="padding-top: 8px;">
+                <span style="font-size: 12px; color: #6b7280;">Format yang didukung: PNG, JPG, JPEG. Maksimal 2MB.</span>
             </div>
             @if($errors->any())
                 <div class="alert alert-error" style="margin-bottom: 16px;">

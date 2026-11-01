@@ -58,6 +58,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     
     // Eco Impact
     Route::get('/eco-impact', [App\Http\Controllers\Admin\EcoController::class, 'index'])->name('eco.index');
+
+    // Super Admin Only Routes
+    Route::middleware('super_admin')->group(function () {
+        Route::resource('canteens', App\Http\Controllers\Admin\CanteenController::class);
+        Route::resource('users', App\Http\Controllers\Admin\UserController::class);
+    });
 });
 
 require __DIR__.'/auth.php';

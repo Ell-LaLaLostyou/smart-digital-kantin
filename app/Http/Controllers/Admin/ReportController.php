@@ -19,12 +19,22 @@ class ReportController extends Controller
         $startDate = $request->input('start_date', Carbon::now()->startOfMonth()->toDateString());
         $endDate = $request->input('end_date', Carbon::now()->toDateString());
 
-        $sales = Sale::with('menu')
-            ->whereBetween('sale_date', [$startDate, $endDate])
-            ->get();
+        $querySales = Sale::with('menu')->whereBetween('sale_date', [$startDate, $endDate]);
+        $queryProds = Production::whereBetween('production_date', [$startDate, $endDate]);
+        $queryWastes = FoodWaste::whereBetween('production_date', [$startDate, $endDate]);
+        $queryMenus = Menu::query();
 
-        $productions = Production::whereBetween('production_date', [$startDate, $endDate])->get();
-        $wastes = FoodWaste::whereBetween('production_date', [$startDate, $endDate])->get();
+        if (auth()->user()->role !== 'super_admin') {
+            $canteenId = auth()->user()->canteen_id;
+            $querySales->where('canteen_id', $canteenId);
+            $queryProds->where('canteen_id', $canteenId);
+            $queryWastes->where('canteen_id', $canteenId);
+            $queryMenus->where('canteen_id', $canteenId);
+        }
+
+        $sales = $querySales->get();
+        $productions = $queryProds->get();
+        $wastes = $queryWastes->get();
 
         $totalRevenue = $sales->sum(function($sale) {
             return $sale->quantity_sold * ($sale->menu->price ?? 0);
@@ -41,7 +51,7 @@ class ReportController extends Controller
 
         $netProfit = $totalRevenue - $totalCost;
 
-        $menuStats = Menu::withCount(['sales as total_sold' => function($q) use ($startDate, $endDate) {
+        $menuStats = $queryMenus->withCount(['sales as total_sold' => function($q) use ($startDate, $endDate) {
             $q->whereBetween('sale_date', [$startDate, $endDate]);
         }])->get();
 
@@ -56,13 +66,24 @@ class ReportController extends Controller
         $startDate = $request->input('start_date', Carbon::now()->startOfMonth()->toDateString());
         $endDate = $request->input('end_date', Carbon::now()->toDateString());
 
-        $sales = Sale::with('menu')->whereBetween('sale_date', [$startDate, $endDate])->get();
+        $querySales = Sale::with('menu')->whereBetween('sale_date', [$startDate, $endDate]);
+        $queryProds = Production::whereBetween('production_date', [$startDate, $endDate]);
+        $queryWastes = FoodWaste::whereBetween('production_date', [$startDate, $endDate]);
+
+        if (auth()->user()->role !== 'super_admin') {
+            $canteenId = auth()->user()->canteen_id;
+            $querySales->where('canteen_id', $canteenId);
+            $queryProds->where('canteen_id', $canteenId);
+            $queryWastes->where('canteen_id', $canteenId);
+        }
+
+        $sales = $querySales->get();
         $totalRevenue = $sales->sum(function($sale) { return $sale->quantity_sold * ($sale->menu->price ?? 0); });
         
-        $productions = Production::whereBetween('production_date', [$startDate, $endDate])->get();
+        $productions = $queryProds->get();
         $totalCost = $productions->sum(function($prod) { return $prod->quantity * (($prod->menu->price ?? 0) * 0.6); });
         
-        $wastes = FoodWaste::whereBetween('production_date', [$startDate, $endDate])->get();
+        $wastes = $queryWastes->get();
         $totalWasteLoss = $wastes->sum(function($waste) { return $waste->quantity_waste * (($waste->menu->price ?? 0) * 0.6); });
 
         $netProfit = $totalRevenue - $totalCost;
